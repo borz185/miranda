@@ -6,13 +6,22 @@ class Api::ServicesController < ApplicationController
     services = Service.active.map do |service|
       user_service = current_user.user_services.find_by(service: service)
       
-      {
+      response = {
         id: service.id,
         name: service.name,
         description: service.description,
         monthly_fee: service.monthly_fee.to_f,
         is_enabled: user_service&.is_enabled || false
       }
+      
+      # Добавляем информацию о следующем списании
+      if user_service&.is_enabled
+        next_billing = (user_service.last_billing_at || user_service.activated_at) + 30.days
+        response[:next_billing_date] = next_billing.to_date
+        response[:is_bonus] = user_service.is_bonus
+      end
+      
+      response
     end
     
     render_success(services)
@@ -59,14 +68,14 @@ class Api::ServicesController < ApplicationController
         description: "Подключение услуги '#{service.name}'"
       )
       
-      # Начисляем бонусы (1 балл за каждые 100 руб.)
+      # Начисляем бонусы
       bonus_earned = (service.monthly_fee / 100).floor
-      if bonus_earned > 0
-        current_user.bonus_points += bonus_earned
-      end
+      current_user.bonus_points += bonus_earned if bonus_earned > 0
       
       user_service.is_enabled = true
+      user_service.is_bonus = false  # Обычная услуга
       user_service.activated_at = Time.current
+      user_service.last_billing_at = Time.current
       user_service.save!
       current_user.save!
       
@@ -75,9 +84,11 @@ class Api::ServicesController < ApplicationController
           id: service.id,
           name: service.name,
           is_enabled: true,
-          bonus_earned: bonus_earned
+          is_bonus: false,
+          bonus_earned: bonus_earned,
+          next_billing_date: 30.days.from_now.to_date
         },
-        "Услуга подключена. Начислено #{bonus_earned} бонусных баллов"
+        "Услуга подключена. Начислено #{bonus_earned} бонусных баллов. Следующее списание: #{30.days.from_now.to_date}"
       )
     end
   end

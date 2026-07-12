@@ -50,15 +50,22 @@ end
 
 # --- Бонусные товары ---
 puts "Создаем бонусные товары..."
+
+# Находим услуги для связи
+antivirus_service = Service.find_by(name: "Антивирус")
+parental_control_service = Service.find_by(name: "Родительский контроль")
+
 bonus_products = [
-  { name: "Скидка 10% на следующий месяц", cost_in_points: 50, description: "Спишите баллы и получите скидку" },
-  { name: "Антивирус в подарок", cost_in_points: 30, description: "Бесплатный месяц антивируса за баллы" }
+  { name: "Скидка 10% на следующий месяц", cost_in_points: 50, description: "Спишите баллы и получите скидку", service: nil },
+  { name: "Антивирус в подарок", cost_in_points: 30, description: "Бесплатный месяц антивируса за баллы", service: antivirus_service },
+  { name: "Родительский контроль в подарок", cost_in_points: 25, description: "Бесплатный месяц родительского контроля", service: parental_control_service }
 ]
 
 bonus_products.each do |bp|
   BonusProduct.find_or_create_by(name: bp[:name]) do |product|
     product.cost_in_points = bp[:cost_in_points]
     product.description = bp[:description]
+    product.service = bp[:service]
   end
 end
 

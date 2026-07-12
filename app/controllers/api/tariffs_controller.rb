@@ -52,6 +52,7 @@ class Api::TariffsController < ApplicationController
     
     # Меняем тариф
     current_user.tariff = tariff
+    current_user.tariff_activated_at = Time.current
     current_user.save!
     
     render_success(
@@ -65,9 +66,10 @@ class Api::TariffsController < ApplicationController
         },
         balance: current_user.balance.to_f,
         bonus_points: current_user.bonus_points,
-        bonus_earned: bonus_earned
+        bonus_earned: bonus_earned,
+        next_billing_date: 30.days.from_now.to_date
       },
-      "Тариф успешно изменён. Начислено #{bonus_earned} бонусных баллов"
+      "Тариф успешно изменён. Начислено #{bonus_earned} бонусных баллов. Следующее списание: #{30.days.from_now.to_date}"
     )
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_07_212124) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_12_214733) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,7 +19,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_212124) do
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
+    t.bigint "service_id"
     t.datetime "updated_at", null: false
+    t.index ["service_id"], name: "index_bonus_products_on_service_id"
   end
 
   create_table "promotions", force: :cascade do |t|
@@ -63,7 +65,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_212124) do
   create_table "user_services", force: :cascade do |t|
     t.datetime "activated_at"
     t.datetime "created_at", null: false
+    t.boolean "is_bonus", default: false, null: false
     t.boolean "is_enabled", default: false
+    t.datetime "last_billing_at"
     t.bigint "service_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -82,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_212124) do
     t.string "email", null: false
     t.string "full_name", null: false
     t.string "password_digest", null: false
+    t.datetime "tariff_activated_at"
     t.bigint "tariff_id"
     t.datetime "updated_at", null: false
     t.index ["account_number"], name: "index_users_on_account_number", unique: true
@@ -89,6 +94,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_212124) do
     t.index ["tariff_id"], name: "index_users_on_tariff_id"
   end
 
+  add_foreign_key "bonus_products", "services"
   add_foreign_key "transactions", "users"
   add_foreign_key "user_services", "services"
   add_foreign_key "user_services", "users"
