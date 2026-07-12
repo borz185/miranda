@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: MyString
+  password_digest: MyString
+  full_name: MyString
+  address: MyString
+  account_number: MyString
+  balance: 9.99
+  bonus_points: 1
+  tariff: one
+  discount_active: false
+
+two:
+  email: MyString
+  password_digest: MyString
+  full_name: MyString
+  address: MyString
+  account_number: MyString
+  balance: 9.99
+  bonus_points: 1
+  tariff: two
+  discount_active: false
